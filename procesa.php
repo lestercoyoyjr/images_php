@@ -1,7 +1,7 @@
 <?php
-    $destino = "img/foto.jpg";
+    $destino = "img/fotov.jpg";
 
-    $nAncho = 400;
+    $nAncho = 600;
     $nAlto = 400;
 
     if ($_FILES['imagen']['error'] === UPLOAD_ERR_OK) {
@@ -12,14 +12,27 @@
         $ancho_original = imagesx($img_original);
         $alto_original = imagesy($img_original);
 
-        $tmp = imagecreatetruecolor($nAncho, $nAlto);
+        if ($ancho_original <= $nAncho && $alto_original <= $nAlto) {
+            move_uploaded_file($imagen_original, $destino);
+        } else {
 
-        imagecopyresized($tmp, $img_original, 0, 0, 0, 0, $nAncho, $nAlto, $ancho_original, $alto_original);
+            if ($ancho_original >= $alto_original) {
+                // horizantal
+                $nAncho = $nAncho;
+                $nAlto = ($nAncho * $alto_original)/ $ancho_original;
+            } else {
+                // vertical
+                $nAlto = $nAlto;
+                $nAncho = ($ancho_original / $alto_original) * $nAlto;
+            }
+            $tmp = imagecreatetruecolor($nAncho, $nAlto);
 
-        imagejpeg($tmp, $destino, 100);
+            imagecopyresampled($tmp, $img_original, 0, 0, 0, 0, $nAncho, $nAlto, $ancho_original, $alto_original);
 
-        header("Content-type: image/jpeg");
-        imagejpeg($tmp);
+            imagejpeg($tmp, $destino, 100);
 
+            header("Content-type: image/jpeg");
+            imagejpeg($tmp);
+        }
     }
 ?>
