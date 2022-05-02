@@ -18,5 +18,8 @@
 
         imagejpeg($tmp, $destino, 100);
 
+        header("Content-type: image/jpeg");
+        imagejpeg($tmp);
+
     }
 ?>
